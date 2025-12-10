@@ -107,9 +107,8 @@ MLOps Project/
 │   ├── audio_processor.py    # Audio preprocessing utilities
 │   ├── model_loader.py       # Model loading and prediction
 │   └── database.py           # MongoDB integration
-├── models/                    # Saved model files (gitignored)
+├── models/                    # Saved model files (train using train_and_save_model.py)
 ├── mlruns/                    # MLflow tracking data (gitignored)
-├── Audio_Detection.ipynb      # Original training notebook
 ├── train_and_save_model.py   # Training script
 ├── mlflow_tracking.py        # MLflow integration
 ├── test_api.py               # API testing script
@@ -124,11 +123,9 @@ MLOps Project/
 ### Quick Start (Docker - Recommended)
 
 ```bash
-# 1. Save your model from notebook
-# In Audio_Detection.ipynb, after training:
-import os
-os.makedirs('models', exist_ok=True)
-model.save('models/auralguard_model.h5')
+# 1. Train the model first (or use pre-trained model if available)
+python train_and_save_model.py --epochs 10
+# This will create models/auralguard_model.h5
 
 # 2. Start everything with Docker
 docker-compose up -d
@@ -136,6 +133,8 @@ docker-compose up -d
 # 3. Test it
 curl http://localhost:5000/health
 ```
+
+**Note:** The trained model file (`models/auralguard_model.h5`) is not included in this repository due to GitHub file size limits. You need to train the model using the provided training script or download it separately if available.
 
 **That's it!** Your API is running at http://localhost:5000
 
