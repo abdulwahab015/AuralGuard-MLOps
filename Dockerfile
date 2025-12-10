@@ -11,18 +11,31 @@ RUN apt-get update && apt-get install -y \
     make \
     libsndfile1 \
     ffmpeg \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install Python dependencies with increased timeout and retry
-# Install in batches to handle network timeouts better
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir --timeout=600 --retries=5 numpy pandas matplotlib seaborn scikit-learn && \
-    pip install --no-cache-dir --timeout=600 --retries=5 librosa soundfile && \
-    pip install --no-cache-dir --timeout=900 --retries=3 tensorflow tensorflow-io keras && \
-    pip install --no-cache-dir --timeout=600 --retries=5 flask werkzeug pymongo mlflow python-dotenv
+# Install Python dependencies
+# Use requirements.txt for better dependency resolution
+# Increased timeout and retries for network issues
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir \
+        --timeout=900 \
+        --retries=10 \
+        --default-timeout=900 \
+        --trusted-host pypi.org \
+        --trusted-host files.pythonhosted.org \
+        -r requirements.txt || \
+    (echo "First attempt failed, retrying..." && \
+     pip install --no-cache-dir \
+         --timeout=1200 \
+         --retries=15 \
+         --default-timeout=1200 \
+         --trusted-host pypi.org \
+         --trusted-host files.pythonhosted.org \
+         -r requirements.txt)
 
 # Copy application code
 COPY . .
