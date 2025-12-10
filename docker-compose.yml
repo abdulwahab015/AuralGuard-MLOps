@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # AuralGuard API Service
+  auralguard-api:
+    build: .
+    container_name: auralguard-api
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_DEBUG=False
+      - PORT=5000
+      - MODEL_PATH=/app/models/auralguard_model.h5
+      - MONGODB_URI=${MONGODB_URI:-mongodb://mongodb:27017/}
+      - MONGODB_DB_NAME=auralguard
+      - MONGODB_COLLECTION=predictions
+      - MLFLOW_TRACKING_URI=file:/app/mlruns
+    volumes:
+      - ./models:/app/models
+      - ./mlruns:/app/mlruns
+      - ./uploads:/app/uploads
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+    networks:
+      - auralguard-network
+
+  # MongoDB Service
+  mongodb:
+    image: mongo:7.0
+    container_name: auralguard-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=auralguard
+    volumes:
+      - mongodb-data:/data/db
+    restart: unless-stopped
+    networks:
+      - auralguard-network
+
+  # MLflow UI (optional)
+  mlflow-ui:
+    image: python:3.10-slim
+    container_name: auralguard-mlflow
+    ports:
+      - "5001:5000"
+    command: >
+      sh -c "pip install mlflow && 
+             mlflow ui --host 0.0.0.0 --port 5000 --backend-store-uri file:/app/mlruns"
+    volumes:
+      - ./mlruns:/app/mlruns
+    restart: unless-stopped
+    networks:
+      - auralguard-network
+
+volumes:
+  mongodb-data:
+
+networks:
+  auralguard-network:
+    driver: bridge
+
+

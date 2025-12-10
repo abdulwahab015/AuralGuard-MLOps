@@ -1,0 +1,72 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+.mypy_cache/
+.pytest_cache/
+.hypothesis/
+venv/
+env/
+ENV/
+
+# Large datasets (exclude to keep repo size manageable)
+Audio Dataset/
+DeepFake Dataset/
+real_audio_chunks/
+fake_audio_chunks/
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.m4a
+
+# MLflow runs (can be regenerated)
+mlruns/
+mlartifacts/
+
+# Uploads and temporary files
+uploads/
+*.tmp
+*.log
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+.ipynb_checkpoints
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Model files (uncomment if you want to exclude large model files)
+# models/*.h5
+# models/*.pb
+# models/*.pkl
+
+# Keep these (don't ignore):
+# !models/auralguard_model.h5
+# !Audio_Detection.ipynb
+# !README.md
+
