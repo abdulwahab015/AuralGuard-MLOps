@@ -1,0 +1,73 @@
+{
+  "family": "auralguard-mlops",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::<ACCOUNT-ID>:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::<ACCOUNT-ID>:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "auralguard-api",
+      "image": "<ACCOUNT-ID>.dkr.ecr.<REGION>.amazonaws.com/auralguard-mlops:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 5000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "PORT",
+          "value": "5000"
+        },
+        {
+          "name": "FLASK_DEBUG",
+          "value": "False"
+        },
+        {
+          "name": "MODEL_PATH",
+          "value": "/app/models/auralguard_model.h5"
+        },
+        {
+          "name": "MONGODB_DB_NAME",
+          "value": "auralguard"
+        },
+        {
+          "name": "MONGODB_COLLECTION",
+          "value": "predictions"
+        },
+        {
+          "name": "MLFLOW_TRACKING_URI",
+          "value": "file:/app/mlruns"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "MONGODB_URI",
+          "valueFrom": "arn:aws:secretsmanager:<REGION>:<ACCOUNT-ID>:secret:auralguard/mongodb-uri"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/auralguard-mlops",
+          "awslogs-region": "<REGION>",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "python -c \"import requests; requests.get('http://localhost:5000/health')\" || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ]
+}
+

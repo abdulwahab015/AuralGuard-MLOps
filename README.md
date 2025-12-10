@@ -221,11 +221,28 @@ docker-compose up -d
 ```
 
 ### Cloud Deployment
-- **AWS**: EC2, ECS, Lambda
-- **Railway.app**: Free tier available
-- **Render.com**: Free tier available
 
-For cloud deployment, follow the Docker setup instructions and deploy the containerized application to your preferred cloud platform.
+#### AWS Deployment
+For detailed AWS deployment instructions, see [aws-deployment/AWS_DEPLOYMENT_GUIDE.md](aws-deployment/AWS_DEPLOYMENT_GUIDE.md)
+
+**Quick Start (ECS Fargate):**
+```bash
+cd aws-deployment
+./deploy-ecs.sh
+```
+
+**Quick Start (EC2):**
+```bash
+cd aws-deployment
+./deploy-ec2.sh  # Shows instructions
+```
+
+#### Other Platforms
+- **Railway.app**: Free tier available - Deploy using Docker
+- **Render.com**: Free tier available - Deploy using Docker
+- **Heroku**: Use Docker container deployment
+
+For other platforms, follow the Docker setup instructions and deploy the containerized application.
 
 ## MLOps Stack
 
