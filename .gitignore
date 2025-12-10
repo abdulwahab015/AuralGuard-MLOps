@@ -68,4 +68,8 @@ models/*.pkl
 # Large Jupyter notebooks (with embedded outputs - too large for GitHub)
 # Note: The training notebook is available but excluded due to size
 # Users should train the model using train_and_save_model.py
+*.ipynb
+
+# Helper scripts (not needed in repo)
+push_to_github.sh
 

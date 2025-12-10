@@ -252,7 +252,7 @@ if __name__ == '__main__':
     initialize_database()
     
     # Run Flask app
-    port = int(os.getenv('PORT', 5001))  # Changed default to 5001 to avoid AirPlay conflict
+    port = int(os.getenv('PORT', 5000))  # Default port 5000 (matches docker-compose)
     debug = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
     
     print(f"Starting Flask server on port {port}...")
