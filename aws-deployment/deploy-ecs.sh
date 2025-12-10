@@ -5,6 +5,10 @@
 
 set -e
 
+# Get script directory for absolute paths
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 # Configuration
 REGION="us-east-1"
 CLUSTER_NAME="auralguard-cluster"
@@ -38,7 +42,7 @@ aws ecr get-login-password --region $REGION | docker login --username AWS --pass
 
 # Build image
 echo "Building Docker image..."
-cd "$(dirname "$0")/.."  # Go to project root
+cd "$PROJECT_ROOT"
 docker build -t $ECR_REPO:latest .
 
 # Tag image
@@ -63,17 +67,27 @@ fi
 echo ""
 echo "📋 Step 4: Registering task definition..."
 # Update task definition with account ID and region
-cd "$(dirname "$0")"  # Back to aws-deployment directory
-sed "s/<ACCOUNT-ID>/$ACCOUNT_ID/g; s/<REGION>/$REGION/g" task-definition.json > task-definition-updated.json
-aws ecs register-task-definition --cli-input-json file://task-definition-updated.json --region $REGION
+# Use absolute path to ensure we find the file
+TASK_DEF_FILE="$SCRIPT_DIR/task-definition.json"
+if [ ! -f "$TASK_DEF_FILE" ]; then
+    echo "❌ Error: task-definition.json not found at $TASK_DEF_FILE"
+    exit 1
+fi
+TASK_DEF_UPDATED="$SCRIPT_DIR/task-definition-updated.json"
+sed "s/<ACCOUNT-ID>/$ACCOUNT_ID/g; s/<REGION>/$REGION/g" "$TASK_DEF_FILE" > "$TASK_DEF_UPDATED"
+aws ecs register-task-definition --cli-input-json file://"$TASK_DEF_UPDATED" --region $REGION
 echo "✅ Task definition registered"
 
 # Step 5: Create or update ECS cluster
 echo ""
 echo "🏗️  Step 5: Setting up ECS cluster..."
-if ! aws ecs describe-clusters --clusters $CLUSTER_NAME --region $REGION 2>/dev/null | grep -q "$CLUSTER_NAME"; then
-    aws ecs create-cluster --cluster-name $CLUSTER_NAME --region $REGION
+CLUSTER_EXISTS=$(aws ecs describe-clusters --clusters $CLUSTER_NAME --region $REGION --query 'clusters[0].clusterName' --output text 2>/dev/null || echo "None")
+if [ "$CLUSTER_EXISTS" == "None" ] || [ -z "$CLUSTER_EXISTS" ]; then
+    echo "Creating ECS cluster..."
+    aws ecs create-cluster --cluster-name $CLUSTER_NAME --region $REGION > /dev/null
     echo "✅ ECS cluster created"
+    # Wait a moment for cluster to be ready
+    sleep 3
 else
     echo "✅ ECS cluster already exists"
 fi
@@ -92,7 +106,8 @@ echo "Security Group ID: $SECURITY_GROUP_ID"
 # Step 7: Create or update ECS service
 echo ""
 echo "🚢 Step 7: Creating/updating ECS service..."
-if aws ecs describe-services --cluster $CLUSTER_NAME --services $SERVICE_NAME --region $REGION 2>/dev/null | grep -q "$SERVICE_NAME"; then
+SERVICE_EXISTS=$(aws ecs describe-services --cluster $CLUSTER_NAME --services $SERVICE_NAME --region $REGION --query 'services[0].serviceName' --output text 2>/dev/null || echo "")
+if [ "$SERVICE_EXISTS" == "$SERVICE_NAME" ]; then
     echo "Updating existing service..."
     aws ecs update-service \
         --cluster $CLUSTER_NAME \
