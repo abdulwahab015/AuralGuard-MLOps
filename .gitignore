@@ -60,13 +60,12 @@ desktop.ini
 .env.local
 .env.*.local
 
-# Model files (uncomment if you want to exclude large model files)
-# models/*.h5
-# models/*.pb
-# models/*.pkl
+# Model files (too large for GitHub - use Git LFS or external storage)
+models/*.h5
+models/*.pb
+models/*.pkl
 
-# Keep these (don't ignore):
-# !models/auralguard_model.h5
-# !Audio_Detection.ipynb
-# !README.md
+# Large Jupyter notebooks (with embedded outputs - too large for GitHub)
+# Note: The training notebook is available but excluded due to size
+# Users should train the model using train_and_save_model.py
 
