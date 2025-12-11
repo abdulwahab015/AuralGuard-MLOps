@@ -4,12 +4,10 @@
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "512",
   "memory": "1024",
-  "executionRoleArn": "arn:aws:iam::<ACCOUNT-ID>:role/ecsTaskExecutionRole",
-  "taskRoleArn": "arn:aws:iam::<ACCOUNT-ID>:role/ecsTaskRole",
   "containerDefinitions": [
     {
       "name": "auralguard-api",
-      "image": "<ACCOUNT-ID>.dkr.ecr.<REGION>.amazonaws.com/auralguard-mlops:latest",
+      "image": "357727179464.dkr.ecr.us-east-1.amazonaws.com/auralguard-mlops:latest",
       "essential": true,
       "portMappings": [
         {
@@ -41,7 +39,9 @@
         {
           "name": "MLFLOW_TRACKING_URI",
           "value": "file:/app/mlruns"
-        },
+        }
+      ],
+      "environment": [
         {
           "name": "MONGODB_URI",
           "value": "mongodb://localhost:27017/"
@@ -51,7 +51,7 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/auralguard-mlops",
-          "awslogs-region": "<REGION>",
+          "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs"
         }
       },
