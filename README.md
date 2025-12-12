@@ -1,23 +1,19 @@
 # 🎙️ AuralGuard: CNN Framework for Audio Authenticity Detection
 
-A fully functional MLOps system to classify AI-generated or human audios. This project includes a complete deployment pipeline with Flask REST API, MLflow tracking, MongoDB logging, Docker containerization, and cloud deployment capabilities.
+A production-ready MLOps system for detecting AI-generated audio using deep learning. This project demonstrates a complete MLOps pipeline with Flask REST API, MLflow tracking, MongoDB logging, Docker containerization, and AWS cloud deployment.
 
-<details>
-<summary>Table of Contents</summary>
+## 📋 Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
-- [Project Structure](#project-structure)
 - [Quick Start](#quick-start)
-- [Requirements](#requirements)
+- [Project Structure](#project-structure)
 - [Model Architecture](#model-architecture)
 - [API Documentation](#api-documentation)
 - [Deployment](#deployment)
 - [MLOps Stack](#mlops-stack)
 - [Model Performance](#model-performance)
 - [Contributing](#contributing)
-
-</details>
 
 ## Overview
 
@@ -120,44 +116,49 @@ MLOps Project/
 
 ## Quick Start
 
-### Quick Start (Docker - Recommended)
+### Prerequisites
+
+- Python 3.10+
+- Docker & Docker Compose (recommended)
+- MongoDB (local or MongoDB Atlas)
+- Model file: `models/auralguard_model.h5` (train using `train_and_save_model.py`)
+
+### Option 1: Docker (Recommended)
 
 ```bash
-# 1. Train the model first (or use pre-trained model if available)
+# 1. Train the model (creates models/auralguard_model.h5)
 python train_and_save_model.py --epochs 10
-# This will create models/auralguard_model.h5
 
-# 2. Start everything with Docker
+# 2. Start services with Docker Compose
 docker-compose up -d
 
-# 3. Test it
+# 3. Test the API
 curl http://localhost:5000/health
 ```
 
-**Note:** The trained model file (`models/auralguard_model.h5`) is not included in this repository due to GitHub file size limits. You need to train the model using the provided training script or download it separately if available.
+**Note:** The trained model file is not included in this repository due to GitHub file size limits. Train it using the provided script or use a pre-trained model if available.
 
-**That's it!** Your API is running at http://localhost:5000
-
-### Alternative: Local Setup (Without Docker)
+### Option 2: Local Setup
 
 ```bash
 # 1. Install dependencies
 pip install -r requirements.txt
 
-# 2. Train model (or use existing)
+# 2. Train model
 python train_and_save_model.py --epochs 10
 
-# 3. Start MongoDB (optional)
+# 3. Start MongoDB (if using local MongoDB)
 docker run -d -p 27017:27017 --name mongodb mongo:7.0
 
-# 4. Run API
-python api/app.py
+# 4. Set environment variables
+export MONGODB_URI="mongodb://localhost:27017/auralguard"
+export MODEL_PATH="models/auralguard_model.h5"
 
-# 5. Test
-curl http://localhost:5000/health
+# 5. Run API
+python api/app.py
 ```
 
-See the Quick Start section above for instructions.
+Your API will be available at `http://localhost:5000`
 
 ## Model Architecture
 
@@ -222,27 +223,36 @@ docker-compose up -d
 
 ### Cloud Deployment
 
-#### AWS Deployment
-For detailed AWS deployment instructions, see [aws-deployment/AWS_DEPLOYMENT_GUIDE.md](aws-deployment/AWS_DEPLOYMENT_GUIDE.md)
+#### AWS Deployment (Recommended)
 
-**Quick Start (ECS Fargate):**
+The project includes comprehensive AWS deployment guides and automated scripts:
+
+**Quick Start:**
 ```bash
 cd aws-deployment
+chmod +x deploy-ecs.sh
 ./deploy-ecs.sh
 ```
 
-**Quick Start (EC2):**
-```bash
-cd aws-deployment
-./deploy-ec2.sh  # Shows instructions
-```
+**Documentation:**
+- [Quick Start Guide](aws-deployment/QUICK_START.md) - Fast deployment (5 minutes)
+- [Step-by-Step Guide](aws-deployment/STEP_BY_STEP_DEPLOYMENT.md) - Detailed instructions for beginners
+- [Full Deployment Guide](aws-deployment/AWS_DEPLOYMENT_GUIDE.md) - Complete reference
+- [Troubleshooting](aws-deployment/TROUBLESHOOTING.md) - Common issues and solutions
+- [Verification Guide](aws-deployment/VERIFY_EVERYTHING.md) - How to verify deployment
+
+**Deployment Options:**
+- **ECS Fargate** (Recommended) - Fully managed, auto-scaling
+- **EC2** - Simple, full control
 
 #### Other Platforms
-- **Railway.app**: Free tier available - Deploy using Docker
-- **Render.com**: Free tier available - Deploy using Docker
-- **Heroku**: Use Docker container deployment
 
-For other platforms, follow the Docker setup instructions and deploy the containerized application.
+The Dockerized application can be deployed to:
+- **Railway.app** - Free tier available
+- **Render.com** - Free tier available
+- **Heroku** - Docker container deployment
+- **Google Cloud Run** - Serverless containers
+- **Azure Container Instances** - Managed containers
 
 ## MLOps Stack
 
@@ -273,14 +283,13 @@ These results indicate that the model is highly effective at distinguishing betw
 
 ## Contributing
 
-We welcome contributions! Here's how you can help:
+Contributions are welcome! Please follow these steps:
 
-1. 🍴 Fork the repository
-2. 🌿 Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. 🔧 Make your changes
-4. 📝 Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-5. 🚀 Push to the branch (`git push origin feature/AmazingFeature`)
-6. 🔀 Open a Pull Request
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## License
 
