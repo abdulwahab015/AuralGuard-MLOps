@@ -15,7 +15,7 @@ CLUSTER_NAME="auralguard-cluster"
 SERVICE_NAME="auralguard-service"
 TASK_DEFINITION="auralguard-mlops"
 ECR_REPO="auralguard-mlops"
-ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+ACCOUNT_ID=$(aws sts get-caller-identity --region $REGION --query Account --output text)
 
 echo "🚀 Starting AuralGuard ECS Deployment..."
 echo "Region: $REGION"
